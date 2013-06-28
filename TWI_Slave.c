@@ -953,12 +953,17 @@ int main (void)
 				Kollektortemperatur=0;
 				Kollektortemperatur=readThermometer();
 				redKollektortemperatur=Kollektortemperatur;
-				if (redKollektortemperatur >= (4* KOLL_TEMP_OFFSET))
+
+				// Eventuell Fehler
+            
+            if (redKollektortemperatur >= (4* KOLL_TEMP_OFFSET))
 				{
+               txbuffer[7]= 1;
 					redKollektortemperatur -= (4* KOLL_TEMP_OFFSET); // Wert bei 0 Grad wegzaehlen
 				}
 				else 
 				{
+               txbuffer[7]= 2;
 					redKollektortemperatur=0; // 255 bei negativen Zahlen verhindern
 				}
 				
@@ -984,6 +989,7 @@ int main (void)
 				
 				if (KollektortemperaturIndex >185) // nur 185 Werte
 				{
+               txbuffer[7]= 3;
 					KollektortemperaturIndex =185;
 					
 				}
@@ -1036,7 +1042,7 @@ int main (void)
 				txbuffer[6] |= (1<<WASSERALARMPIN);
 			}
 			
-			txbuffer[7]= eeprom_read_byte(&WDT_ErrCount0);
+			//txbuffer[7]= eeprom_read_byte(&WDT_ErrCount0);
 			
 			rxdata=0;
 			
