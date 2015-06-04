@@ -738,7 +738,7 @@ int main (void)
 		
 		/* **** rx_buffer abfragen **************** */
 		
-		if (rxdata)				//	Daten von TWI vorhanden, Befehle ausfuehre, Daten fuer naechsten Aufruf bereitstellen
+		if (rxdata)				//	Daten von TWI vorhanden, Befehle ausfuehren, Daten fuer naechsten Aufruf bereitstellen
 		{
 			
 			Estrichstatus=rxbuffer[0];
