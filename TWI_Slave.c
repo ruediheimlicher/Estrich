@@ -445,7 +445,7 @@ void timer0 (void)
 }
 
 
-ISR (SIG_OVERFLOW0) 
+ISR (TIMER0_OVF_vect)
 { 
 	ADCImpuls++;
 	Servopause++;
@@ -986,7 +986,7 @@ int main (void)
 				//txbuffer[2]= KollektortemperaturH;
 				//txbuffer[3] |= KollektortemperaturL; // Bits 0,1
 				uint8_t KollektortemperaturIndex=redKollektortemperatur & 0x00FF;
-				
+            
 				if (KollektortemperaturIndex >185) // nur 185 Werte
 				{
                txbuffer[7]= 3;

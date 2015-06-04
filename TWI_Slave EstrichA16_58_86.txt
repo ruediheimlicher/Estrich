@@ -11,7 +11,7 @@ TWI_Slave Estrich_58_36
 // Port B als Eingang
 #define PUMPEPIN			3	//	PIN 2 von PORT B als Eingang fuer Pumpestatus
 #define ELEKTROPIN		4	// Pin 3 von Port B als Eingang fuer Elektroeinsatzstatus
-#define WASSERALARMPIN	6	// Pin 6 con Port B als Eingang fuer Wasseralarmsensor
+#define WASSERALARMPIN	6	// Pin 6 von Port B als Eingang fuer Wasseralarmsensor
 
 #define LOOPLEDPORT		PORTD
 #define LOOPLEDDDR		DDRD
