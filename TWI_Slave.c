@@ -1049,7 +1049,7 @@ int main (void)
 		} // if rxdata
 		
 		
-		
+		/*
 		if (!(PINB & (1<<PB0))) // Taste 0
 		{
 			//lcd_gotoxy(12,1);
@@ -1139,7 +1139,7 @@ int main (void)
 			}//	else
 			
 		} // Taste 1
-		
+		*/
 		/* ******************** */
 		//		initADC(TASTATURPIN);
 		//		Tastenwert=(uint8_t)(readKanal(TASTATURPIN)>>2);
