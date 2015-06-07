@@ -85,7 +85,7 @@ void lcd_putint1(uint8_t zahl);
 void lcd_clr_line(uint8_t zahl);
 void lcd_puthex(uint8_t zahl);
 
-uint8_t lcd_delay=1;
+uint8_t lcd_delay=100;
 extern volatile uint8_t TWI_Pause;
 extern volatile uint8_t status;
 //%%%%%%%% ab hier sind normalerweise keine weiteren Änderungen erforderlich! %%%%%%%%//
@@ -188,6 +188,7 @@ ein Statuscode, anhand dessen die Situation festgestellt werden kann.
 */
 ISR (TWI_vect)  
 {
+   //lcd_putc('G');
 	wdt_reset();
 	uint8_t data=0;
 	status=0;
@@ -195,7 +196,8 @@ ISR (TWI_vect)
 	//lcd_clr_line(1);
 	//lcd_gotoxy(4,1);
 	//lcd_puts("IR  \0");
-	//		twidelay_ms(lcd_delay);
+	//twidelay_ms(lcd_delay);
+   _delay_us(lcd_delay);
 	TWI_Pause=0; // Servo ausschalten
 	rxdata=1;
 	switch (TW_STATUS) //TWI-Statusregister prüfen und nötige Aktion bestimmen 

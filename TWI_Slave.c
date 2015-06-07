@@ -175,7 +175,7 @@ static volatile uint8_t SlaveStatus=0x00; //status
 void eep_write_wochentag(uint8_t *ablauf[24], uint8_t *tag);
 
 volatile uint8_t rxbuffer[buffer_size];
-
+volatile uint8_t TWIcounter=0;
 /*Der Sendebuffer, der vom Master ausgelesen werden kann.*/
 volatile uint8_t txbuffer[buffer_size];
 
@@ -445,7 +445,7 @@ void timer0 (void)
 }
 
 
-ISR (SIG_OVERFLOW0) 
+ISR (TIMER0_OVF_vect)
 { 
 	ADCImpuls++;
 	Servopause++;
@@ -643,7 +643,7 @@ int main (void)
 	uint16_t redKollektortemperatur=0;
 	spistatus=0;
 	
-	uint8_t SlaveStatus=0x00; //status
+	//uint8_t SlaveStatus=0x00; //status
 	
 	// Ankuendigen, dass schon ein wdt erfolgte
 	if (eepromWDT_Count0 & (1<<WDTBIT))
@@ -694,10 +694,18 @@ int main (void)
 	lcd_clr_line(0);  
 	lcd_puts("Solar\0");
    lcd_puts(" wait\0");
-	
+   //lcd_puthex(SlaveStatus);
+   /*
+   init_twi_slave (SLAVE_ADRESSE);
+   sei();
+   SlaveStatus &= ~(1<<TWI_WAIT_BIT);
+   SlaveStatus |= (1<<TWI_OK_BIT); // TWI ist ON
+   lcd_gotoxy(5,0);
+   lcd_puts("     \0");
+*/
 #pragma mark while
 	while (1)
-	{	
+	{
 		//Blinkanzeige
 		loopcount0++;
 		if (loopcount0==0xFFFF)
@@ -720,32 +728,28 @@ int main (void)
 		// wenn Startbedingung vom Master:  TWI_slave initiieren
 		if (SlaveStatus & (1<<TWI_WAIT_BIT)) 
 		{
+         //lcd_gotoxy(0,0);
+         //lcd_putc('A');
 			if ((TWI_PIN & (1<<SCLPIN))&&(!(TWI_PIN & (1<<SDAPIN))))// Startbedingung vom Master: SCL HI und SDA LO
 			{
-            
             init_twi_slave (SLAVE_ADRESSE);
+
             sei();
             SlaveStatus &= ~(1<<TWI_WAIT_BIT);
             SlaveStatus |= (1<<TWI_OK_BIT); // TWI ist ON
-            lcd_gotoxy(5,0);
-            lcd_puts("     \0");
+        //    lcd_gotoxy(5,0);
+        //    lcd_puts("     x\0");
             // StartDelayBit zuruecksetzen
-            
 			}
 		}
 		/**	Ende Startroutinen	***********************/
-		
+		//lcd_putc('X');
 		
 		/* **** rx_buffer abfragen **************** */
 		
 		if (rxdata)				//	Daten von TWI vorhanden, Befehle ausfuehre, Daten fuer naechsten Aufruf bereitstellen
 		{
-			
 			Estrichstatus=rxbuffer[0];
-			//lcd_gotoxy(0,1);
-			//lcd_puts("St:\0");
-			//lcd_puthex(Estrichstatus);
-			//delay_ms(20);
 			if ( Estrichstatus  & (1<<UHRBIT))
 			{
 				//delay_ms(1000);
@@ -1045,11 +1049,11 @@ int main (void)
 			//txbuffer[7]= eeprom_read_byte(&WDT_ErrCount0);
 			
 			rxdata=0;
-			
+         //OSZIHI;
 		} // if rxdata
 		
 		
-		
+		/*
 		if (!(PINB & (1<<PB0))) // Taste 0
 		{
 			//lcd_gotoxy(12,1);
@@ -1105,8 +1109,8 @@ int main (void)
 			}//else
 			
 		}	// Taste 0
-		
-		
+		*/
+		/*
 		if (!(PINB & (1<<PB1))) // Taste 1
 		{
 			//lcd_gotoxy(12,1);
@@ -1139,7 +1143,7 @@ int main (void)
 			}//	else
 			
 		} // Taste 1
-		
+		*/
 		/* ******************** */
 		//		initADC(TASTATURPIN);
 		//		Tastenwert=(uint8_t)(readKanal(TASTATURPIN)>>2);
