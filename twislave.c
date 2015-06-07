@@ -10,7 +10,7 @@
 
 //#ifndef _LCD_H
 //#define _LCD_H
-
+#include <util/delay.h>
 //#include "adc.c"
 //#include <avr/wdt.h>
 /*
@@ -196,8 +196,8 @@ ISR (TWI_vect)
 	//lcd_clr_line(1);
 	//lcd_gotoxy(4,1);
 	//lcd_puts("IR  \0");
-	//twidelay_ms(lcd_delay);
-   _delay_us(lcd_delay);
+	//twidelay_ms(1);
+   _delay_us(100);
 	TWI_Pause=0; // Servo ausschalten
 	rxdata=1;
 	switch (TW_STATUS) //TWI-Statusregister prüfen und nötige Aktion bestimmen 

@@ -10,7 +10,6 @@ TWI_Slave.o: TWI_Slave.c \
  /usr/local/CrossPack-AVR-20131216/avr/include/avr/version.h \
  /usr/local/CrossPack-AVR-20131216/avr/include/avr/fuse.h \
  /usr/local/CrossPack-AVR-20131216/avr/include/avr/lock.h \
- /usr/local/CrossPack-AVR-20131216/avr/include/avr/delay.h \
  /usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h \
  /usr/local/CrossPack-AVR-20131216/avr/include/util/delay_basic.h \
  /usr/local/CrossPack-AVR-20131216/avr/include/math.h \
@@ -45,8 +44,6 @@ TWI_Slave.o: TWI_Slave.c \
 /usr/local/CrossPack-AVR-20131216/avr/include/avr/fuse.h:
 
 /usr/local/CrossPack-AVR-20131216/avr/include/avr/lock.h:
-
-/usr/local/CrossPack-AVR-20131216/avr/include/avr/delay.h:
 
 /usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h:
 
