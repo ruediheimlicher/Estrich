@@ -30,6 +30,7 @@
 //***********************************
 //Estrich							*
 #define SLAVE_ADRESSE 0x58 //		*
+// Fuses: lf: E3 4 MHz  hf: D9 ohne JTAG
 //									*
 //***********************************
 #define TWI_PORT		PORTC
