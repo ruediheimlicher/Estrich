@@ -10,7 +10,7 @@
 
 //#ifndef _LCD_H
 //#define _LCD_H
-//#include <util/delay.h>
+#include <util/delay.h>
 //#include "adc.c"
 //#include <avr/wdt.h>
 /*
