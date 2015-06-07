@@ -60,6 +60,18 @@ TWI_Slave.o: TWI_Slave.c \
 
 /usr/local/CrossPack-AVR-20131216/avr/include/avr/eeprom.h:
 
+/usr/local/CrossPack-AVR-20131216/avr/include/util/delay.h:
+
+/usr/local/CrossPack-AVR-20131216/avr/include/util/delay_basic.h:
+
+/usr/local/CrossPack-AVR-20131216/avr/include/math.h:
+
+/usr/local/CrossPack-AVR-20131216/avr/include/avr/pgmspace.h:
+
+/usr/local/CrossPack-AVR-20131216/lib/gcc/avr/4.8.1/include/stddef.h:
+
+/usr/local/CrossPack-AVR-20131216/avr/include/avr/eeprom.h:
+
 /usr/local/CrossPack-AVR-20131216/avr/include/avr/wdt.h:
 
 twislave.c:
