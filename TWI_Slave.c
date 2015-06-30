@@ -507,8 +507,8 @@ void timer2 (uint8_t wert)
 
 uint16_t readThermometer(void)
 {
-// #define DATENBREITE
-//	#define ADC_OFFSET
+// #define DATENBREITE 10
+//	#define ADC_OFFSET 160 // ADC-Wert fuer 0 Grad
 	//lcd_gotoxy(0,0);
 	//lcd_puts("rt\0");
 	
@@ -568,6 +568,7 @@ int main (void)
 	//MCRSR&=~(1<<WDRF);
 	wdt_disable();
 	
+   
 	/* initialize the LCD */
 	lcd_initialize(LCD_FUNCTION_8x2, LCD_CMD_ENTRY_INC, LCD_CMD_ON);
 	
@@ -738,8 +739,8 @@ int main (void)
             sei();
             SlaveStatus &= ~(1<<TWI_WAIT_BIT);
             SlaveStatus |= (1<<TWI_OK_BIT); // TWI ist ON
-        //    lcd_gotoxy(5,0);
-        //    lcd_puts("     x\0");
+            lcd_gotoxy(5,0);
+            lcd_puts("     \0");
             // StartDelayBit zuruecksetzen
 			}
 		}
@@ -960,6 +961,7 @@ int main (void)
 				redKollektortemperatur=Kollektortemperatur;
 
 				// Eventuell Fehler
+            txbuffer[7]= 0;
             
             if (redKollektortemperatur >= (4* KOLL_TEMP_OFFSET))
 				{
@@ -998,6 +1000,7 @@ int main (void)
 					KollektortemperaturIndex =185;
 					
 				}
+            
 				uint8_t temperatur=eeprom_read_byte(&TempWerte[KollektortemperaturIndex]);
 				lcd_gotoxy(0,3);
 				

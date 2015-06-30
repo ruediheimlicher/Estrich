@@ -303,8 +303,10 @@ ISR (TWI_vect)
 			//		lcd_putint(txbuffer[buffer_adr]);
 			TWDR = txbuffer[buffer_adr]; //Datenbyte senden 
 			buffer_adr++; //bufferadresse für nächstes Byte weiterzählen
-			if(buffer_adr<(buffer_size-1)) //im Buffer ist mehr als ein Byte, das gesendet werden kann
-			{
+//			if(buffer_adr<(buffer_size-1)) //im Buffer ist mehr als ein Byte, das gesendet werden kann
+         if(buffer_adr<(buffer_size)) //im Buffer ist mehr als ein Byte, das gesendet werden kann
+			
+         {
 				TWCR_ACK; //nächstes Byte senden, danach ACK erwarten
 				status |= (1<<6);
 			}
