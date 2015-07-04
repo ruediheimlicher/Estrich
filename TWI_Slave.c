@@ -148,6 +148,7 @@
 
 #define WDTBIT				7
 
+
 // Wertetabelle fuer Temperatur zu Spannungswert. 186 Werte (Index 0-185)
 uint8_t TempWerte[] EEMEM ={0, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 22, 23, 24, 25, 26, 28, 
 29, 30, 31, 32, 34, 35, 36, 37, 38, 40, 41, 42, 44, 45, 46, 47, 48, 50, 51, 52, 53, 54, 56, 57, 58, 60, 61, 62, 64, 
@@ -157,6 +158,11 @@ uint8_t TempWerte[] EEMEM ={0, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 16, 17, 
 166, 168, 170, 171, 172, 174, 176, 177, 178, 180, 182, 183, 184, 186, 188, 189, 190, 192, 194, 195, 196, 198, 200, 
 201, 202, 204, 206, 207, 208, 210, 212, 213, 214, 216, 218, 220, 221, 222, 224, 226, 227, 228, 230, 232, 234, 235, 
 236, 238, 240, 242, 243, 244, 246, 248, 250, 251, 252, 254};
+
+/*
+// Wertetabelle fuer Temperatur zu Spannungswert. 236 Werte (Index 0-235) Ab index 186 nur LB, HB ist 1
+uint16_t TempWerte[] EEMEM ={0,2,3,4,5,6,7,8,10,11,12,13,14,16,17,18,19,20,22,23,24,25,26,28,29,30,31,32,34,35,36,37,38,40,41,42,44,45,46,47,48,50,51,52,53,54,56,57,58,60,61,62,64,65,66,67,68,70,71,72,74,75,76,78,79,80,82,83,84,85,86,88,89,90,92,93,94,96,97,98,100,101,102,104,105,106,108,109,110,112,113,114,116,118,119,120,122,123,124,126,127,128,130,131,132,134,136,137,138,140,141,142,144,145,146,148,150,151,152,154,155,156,158,160,161,162,164,165,166,168,170,171,172,174,176,177,178,180,182,183,184,186,188,189,190,192,194,195,196,198,200,201,202,204,206,207,208,210,212,213,214,216,218,220,221,222,224,226,227,228,230,232,234,235,236,238,240,242,243,244,246,248,250,251,252,254,1,3,4,5,7,9,11,13,15,17,19,21,23,25,27,29,31,33,35,37,39,41,43,45,47,49,51,53,55,57,59,61,63,65,67,69,71,73,75,77,79,81,83,85};
+*/
 
 
 //#define MAXSENSORS 2
@@ -963,16 +969,15 @@ int main (void)
             //lcd_putint12(redKollektortemperatur-(4* KOLL_TEMP_OFFSET));
 
 				// Eventuell Fehler
-            txbuffer[7]= 0;
             
             if (redKollektortemperatur >= (4* KOLL_TEMP_OFFSET)) // Wert bei 0 Grad
 				{
-               txbuffer[7]= 1;
+               //txbuffer[7]= 1;
 					redKollektortemperatur -= (4* KOLL_TEMP_OFFSET); // Wert bei 0 Grad wegzaehlen
 				}
 				else 
 				{
-               txbuffer[7]= 2;
+               //txbuffer[7]= 2;
 					redKollektortemperatur=0; // 255 bei negativen Zahlen verhindern
 				}
             lcd_gotoxy(0,0);
@@ -996,29 +1001,50 @@ int main (void)
 				//txbuffer[2]= KollektortemperaturH;
 				//txbuffer[3] |= KollektortemperaturL; // Bits 0,1
             
-            /*
+            
+         
             uint8_t KollektortemperaturIndex=redKollektortemperatur & 0x00FF;
  				if (KollektortemperaturIndex >185) // nur 185 Werte
 				{
-               txbuffer[7]= 3;
+              // txbuffer[7]= 3;
 					KollektortemperaturIndex =185;
 					
 				}
-            */
-            uint8_t KollektortemperaturIndex=0;
-            if (redKollektortemperatur >185) // nur 185 Werte
+            
+            
+            
+            /*
+            uint16_t KollektortemperaturIndex=redKollektortemperatur;
+            if (redKollektortemperatur >235) // nur 185 Werte
             {
-               txbuffer[7]= 3;
-               KollektortemperaturIndex =185;
+               //txbuffer[7]= 3;
+               KollektortemperaturIndex =235;
                
             }
-
+            else
+            {
+               KollektortemperaturIndex=0;
+            }
+             */
             
             
             lcd_putc(' ');
             lcd_putint(KollektortemperaturIndex);
-				uint8_t temperatur=eeprom_read_byte(&TempWerte[KollektortemperaturIndex]);
-				lcd_gotoxy(0,3);
+            
+            
+				uint8_t temperatur=eeprom_read_byte(&TempWerte[(KollektortemperaturIndex & 0xFF)]);
+				
+            
+            
+            lcd_gotoxy(0,3);
+            
+            
+
+            txbuffer[7] = redKollektortemperatur>>2; // LB
+            
+            //txbuffer[6] |= ((redKollektortemperatur & 0xFF00)>>8);
+
+            
 				
 				//lcd_putint2(KollektortemperaturIndex);
 				//lcd_putc(' ');
@@ -1026,6 +1052,11 @@ int main (void)
 				lcd_putint(temperatur/2);
 				//txbuffer[4]=temperatur; 
 				txbuffer[5]=temperatur;
+            if (KollektortemperaturIndex > 185)
+            {
+               txbuffer[6] |= 0x01;
+            }
+            
 				
 				spistatus &= ~(1<< READOK);
 			}
