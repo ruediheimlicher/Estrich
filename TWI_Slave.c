@@ -959,11 +959,13 @@ int main (void)
 				Kollektortemperatur=0;
 				Kollektortemperatur=readThermometer();
 				redKollektortemperatur=Kollektortemperatur;
+            //lcd_gotoxy(0,0);
+            //lcd_putint12(redKollektortemperatur-(4* KOLL_TEMP_OFFSET));
 
 				// Eventuell Fehler
             txbuffer[7]= 0;
             
-            if (redKollektortemperatur >= (4* KOLL_TEMP_OFFSET))
+            if (redKollektortemperatur >= (4* KOLL_TEMP_OFFSET)) // Wert bei 0 Grad
 				{
                txbuffer[7]= 1;
 					redKollektortemperatur -= (4* KOLL_TEMP_OFFSET); // Wert bei 0 Grad wegzaehlen
@@ -973,7 +975,8 @@ int main (void)
                txbuffer[7]= 2;
 					redKollektortemperatur=0; // 255 bei negativen Zahlen verhindern
 				}
-				
+            lcd_gotoxy(0,0);
+            lcd_putint12(redKollektortemperatur);
 				//redKollektortemperatur &= 0x00FF; // 8 Bit
 				//lcd_clr_line(3);
 				//delay_ms(50);
@@ -992,15 +995,28 @@ int main (void)
 				
 				//txbuffer[2]= KollektortemperaturH;
 				//txbuffer[3] |= KollektortemperaturL; // Bits 0,1
-				uint8_t KollektortemperaturIndex=redKollektortemperatur & 0x00FF;
             
-				if (KollektortemperaturIndex >185) // nur 185 Werte
+            /*
+            uint8_t KollektortemperaturIndex=redKollektortemperatur & 0x00FF;
+ 				if (KollektortemperaturIndex >185) // nur 185 Werte
 				{
                txbuffer[7]= 3;
 					KollektortemperaturIndex =185;
 					
 				}
+            */
+            uint8_t KollektortemperaturIndex=0;
+            if (redKollektortemperatur >185) // nur 185 Werte
+            {
+               txbuffer[7]= 3;
+               KollektortemperaturIndex =185;
+               
+            }
+
             
+            
+            lcd_putc(' ');
+            lcd_putint(KollektortemperaturIndex);
 				uint8_t temperatur=eeprom_read_byte(&TempWerte[KollektortemperaturIndex]);
 				lcd_gotoxy(0,3);
 				
@@ -1017,22 +1033,30 @@ int main (void)
 #pragma mark Status abfragen	
 			txbuffer[6]=0;
 			//	Pumpe abfragen
+         lcd_gotoxy(18,0);
+         lcd_putc('P');
 			if (ESTRICH_INPIN & (1<<PUMPEPIN)) // Pumpe ist OFF
 			{
 				txbuffer[6] &= ~(1<<PUMPEPIN); // Bit ist LO
+            lcd_putc('-');
 			}
 			else 
 			{
 				txbuffer[6] |= (1<<PUMPEPIN); // Bit ist HI
+            lcd_putc('+');
 			}
 			
 			
 			
 			// Elektroeinsatz abfragen
+         lcd_gotoxy(18,1);
+         lcd_putc('E');
+
 			if (ESTRICH_INPIN & (1<<ELEKTROPIN))
 			{
 				txbuffer[6] &= ~(1<<ELEKTROPIN); // Bit ist LO
-			}
+            lcd_putc('-');
+         }
 			else 
 				
 			{
@@ -1040,16 +1064,25 @@ int main (void)
 			}
 			
 			// Wasseralarm abfragen
+         lcd_gotoxy(12,1);
+         lcd_putc('W');
 			if (ESTRICH_INPIN & (1<<WASSERALARMPIN)) // Pin 7 PIN ist HI, alles OK
 			{
 				txbuffer[6] &= ~(1<<WASSERALARMPIN); // Bit ist LO
+            
+            lcd_putc('+');
 			}
 			else // Wasser laeuft
 				
 			{
 				txbuffer[6] |= (1<<WASSERALARMPIN);
+             lcd_putc('!');
 			}
 			
+         //txbuffer[6] |= (1<<PUMPEPIN);
+         lcd_gotoxy(14,0);
+         lcd_puthex(txbuffer[6]);
+         lcd_puthex(txbuffer[7]);
 			//txbuffer[7]= eeprom_read_byte(&WDT_ErrCount0);
 			
 			rxdata=0;

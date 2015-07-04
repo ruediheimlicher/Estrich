@@ -295,12 +295,14 @@ ISR (TWI_vect)
 				//			lcd_puts("G\0");
 				status |= (1<<5);
 				buffer_adr=0;
-			}	
-			//		lcd_gotoxy(3,0);
-			//		lcd_puts("adr: \0");
-			//		lcd_putint(buffer_adr);
-			//		lcd_putc(' ');
-			//		lcd_putint(txbuffer[buffer_adr]);
+			}
+         
+         if (buffer_adr >5) // 150703 ev. timing-Problem
+         {
+			//		lcd_gotoxy(2*buffer_adr,1);
+			//		lcd_puthex(txbuffer[buffer_adr]);
+         }
+         
 			TWDR = txbuffer[buffer_adr]; //Datenbyte senden 
 			buffer_adr++; //bufferadresse für nächstes Byte weiterzählen
 //			if(buffer_adr<(buffer_size-1)) //im Buffer ist mehr als ein Byte, das gesendet werden kann
