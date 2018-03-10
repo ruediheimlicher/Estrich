@@ -33,6 +33,9 @@
 // Fuses: lf: E3 4 MHz  hf: D9 ohne JTAG
 //									*
 //***********************************
+
+
+
 #define TWI_PORT		PORTC
 #define TWI_PIN		PINC
 #define TWI_DDR		DDRC
@@ -966,14 +969,14 @@ int main (void)
             //txbuffer[3]=0;
             //txbuffer[4]=0;
             Kollektortemperatur=0;
-            Kollektortemperatur=readThermometer();
+            Kollektortemperatur=readThermometer(); // Wert aus SPI vom Thermometer. 10 Bit, interne RefSpannung
             redKollektortemperatur=Kollektortemperatur;
-            //lcd_gotoxy(0,0);
-            //lcd_putint12(redKollektortemperatur-(4* KOLL_TEMP_OFFSET));
+            lcd_gotoxy(0,0);
+            lcd_putint12(redKollektortemperatur);
             
-            // Eventuell Fehler
+            // Eventuell Fehler: 
             
-            if (redKollektortemperatur >= (4* KOLL_TEMP_OFFSET)) // Wert bei 0 Grad
+            if (redKollektortemperatur >= (4* KOLL_TEMP_OFFSET)) // Wert bei 0 Grad, KOLL_TEMP_OFFSET = 163; Wert: 652
             {
                //txbuffer[7]= 1;
                redKollektortemperatur -= (4* KOLL_TEMP_OFFSET); // Wert bei 0 Grad wegzaehlen
@@ -983,31 +986,13 @@ int main (void)
                //txbuffer[7]= 2;
                redKollektortemperatur=0; // 255 bei negativen Zahlen verhindern
             }
-            lcd_gotoxy(0,0);
-            lcd_putint12(redKollektortemperatur);
-            //redKollektortemperatur &= 0x00FF; // 8 Bit
-            //lcd_clr_line(3);
-            //delay_ms(50);
-            //lcd_gotoxy(0,3);
-            //lcd_puts("TKr:\0");
-            //lcd_putint(redKollektortemperatur & 0x00FF);
             
-            //lcd_gotoxy(0,2);
-            //lcd_puts("TK:\0");
-            //		uint8_t KollektortemperaturH=Kollektortemperatur>>2;
-            //		uint8_t KollektortemperaturL=Kollektortemperatur & 0x003;
+            //
+            //lcd_gotoxy(5,0);
+             lcd_putc(' ');
+            lcd_putint12(redKollektortemperatur); // 10 Bit, Abgezogen ist Wert bei 0 Grad (4* KOLL_TEMP_OFFSET)
             
-            //lcd_putint(KollektortemperaturH);
-            //lcd_putc('*');
-            //lcd_putint(KollektortemperaturL);
-            
-            //txbuffer[2]= KollektortemperaturH;
-            //txbuffer[3] |= KollektortemperaturL; // Bits 0,1
-            
-            
-            
-            //uint8_t KollektortemperaturIndex=redKollektortemperatur & 0x00FF;
-            uint16_t KollektortemperaturIndex=redKollektortemperatur;
+            uint16_t KollektortemperaturIndex = redKollektortemperatur;
             
             if (KollektortemperaturIndex >185) // nur 185 Werte
             {
@@ -1016,18 +1001,7 @@ int main (void)
                
             }
             
-            
-            /*
-             if (KollektortemperaturIndex >235) // nur 185 Werte
-             {
-             // txbuffer[7]= 3;
-             KollektortemperaturIndex =235;
              
-             }
-             
-             */
-            
-            
             /*
              uint16_t KollektortemperaturIndex=redKollektortemperatur;
              if (redKollektortemperatur >235) // nur 185 Werte
@@ -1042,16 +1016,14 @@ int main (void)
              }
              */
             
-            
-            
-            
-            uint8_t temperatur=eeprom_read_byte(&TempWerte[(KollektortemperaturIndex & 0xFF)]);
+            // Temperatur aus Wertetabelle lesen
+             uint8_t   temperatur=eeprom_read_byte(&TempWerte[KollektortemperaturIndex]);
+               
             
             lcd_putc(' ');
             lcd_putint(temperatur);
             
             lcd_gotoxy(0,3);
-            
             
             
             txbuffer[7] = redKollektortemperatur>>1; // richtiger Wert. Master teilt die Werte /2
@@ -1068,11 +1040,13 @@ int main (void)
             txbuffer[5]=temperatur;
             if (KollektortemperaturIndex > 185)
             {
-               txbuffer[6] |= 0x01;
-               
+               txbuffer[6] |= (1<<0);
             }
             
-            
+            else
+            {
+               txbuffer[6] &= ~(1<<0);
+            }
             spistatus &= ~(1<< READOK);
          }
          
@@ -1095,7 +1069,7 @@ int main (void)
          
          
          // Elektroeinsatz abfragen
-         lcd_gotoxy(18,1);
+         lcd_gotoxy(16,1);
          lcd_putc('E');
          
          if (ESTRICH_INPIN & (1<<ELEKTROPIN))
@@ -1106,6 +1080,7 @@ int main (void)
          else 
             
          {
+            lcd_putc('+');
             txbuffer[6] |= (1<<ELEKTROPIN); // Bit ist HI
          }
          

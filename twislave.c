@@ -199,7 +199,7 @@ ISR (TWI_vect)
 	//twidelay_ms(1);
    _delay_us(100);
 	TWI_Pause=0; // Servo ausschalten
-	rxdata=1;
+//	rxdata=1; 161012 Fehler: erst in NACK setzen
 	switch (TW_STATUS) //TWI-Statusregister prüfen und nötige Aktion bestimmen 
 	{
 			

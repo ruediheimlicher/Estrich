@@ -32,3 +32,9 @@ TWI_Slave Estrich_58_36
 #define OW_IN   PINB
 #define OW_OUT  PORTB
 #define OW_DDR  DDRB
+
+
+#define OSZIPORT				PORTB
+#define OSZIPORTDDR			DDRB
+#define OSZIPORTPIN			PINB
+#define OSZIA					0
