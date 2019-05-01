@@ -144,6 +144,7 @@
 #define ELEKTROPIN		4	// Pin 4 von Port B als Eingang fuer Elektroeinsatzstatus
 #define WASSERALARMPIN	7	// Pin 7 von Port B als Eingang fuer Wasseralarmsensor
 
+#define MODEMPIN          5  // Anzeige Webstatus
 #define KOLL_TEMP_OFFSET 163
 
 #define STARTDELAYBIT	0
@@ -409,7 +410,10 @@ void slaveinit(void)
    
    ESTRICH_INDDR &= ~(1<< WASSERALARMPIN); // Eingang fuer Wasseralarm-Status (Active LO)
    ESTRICH_INPORT |= (1<<WASSERALARMPIN);  // HI
-   
+ 
+   DDRD &= ~(1<< MODEMPIN); // Eingang fuer Modem-Status (Active LO)
+   PORTD &= ~(1<<MODEMPIN);  // LO
+
    // Kollektor-Tempmessung
    
    // SPI
@@ -732,6 +736,23 @@ int main (void)
          //delay_ms(10);
          // DS1820 loop-stuff begin
          // verschoben in rxdata
+         
+         // MODEMSTATUS abfragen
+         lcd_gotoxy(12,1);
+         lcd_putc('N');
+         if (PIND & (1<<MODEMPIN)) // MODEMPIN ist LO, Error
+         {
+            txbuffer[6] |= (1<<MODEMPIN); // Bit ist HI, WEB ist OFF
+            
+            lcd_putc('+');
+         }
+         else // Modem ist blockiert
+            
+         {
+            txbuffer[6] &=  ~(1<<MODEMPIN); // Modem OK
+            lcd_putc('-');
+         }
+
       }
       
       /**	Beginn Startroutinen	***********************/
@@ -997,7 +1018,7 @@ int main (void)
             if (KollektortemperaturIndex >185) // nur 185 Werte
             {
                // txbuffer[7]= 3;
-               KollektortemperaturIndex =185;
+          //     KollektortemperaturIndex =185;
                
             }
             
@@ -1017,11 +1038,11 @@ int main (void)
              */
             
             // Temperatur aus Wertetabelle lesen
-             uint8_t   temperatur=eeprom_read_byte(&TempWerte[KollektortemperaturIndex]);
+             uint16_t   temperatur=eeprom_read_byte(&TempWerte[KollektortemperaturIndex]);
                
             
             lcd_putc(' ');
-            lcd_putint(temperatur);
+            lcd_putint12(temperatur);
             
             lcd_gotoxy(0,3);
             
@@ -1085,7 +1106,7 @@ int main (void)
          }
          
          // Wasseralarm abfragen
-         lcd_gotoxy(12,1);
+         lcd_gotoxy(14,1);
          lcd_putc('W');
          if (ESTRICH_INPIN & (1<<WASSERALARMPIN)) // Pin 7 PIN ist HI, alles OK
          {
@@ -1100,13 +1121,31 @@ int main (void)
             lcd_putc('!');
          }
          
+         // WEBSTATUS abfragen
+         lcd_gotoxy(12,1);
+         lcd_putc('N');
+         if (PIND & (1<<MODEMPIN)) // MODEMPIN ist OFF, alles OK
+         {
+            txbuffer[6] |= (1<<MODEMPIN); // Bit ist HI, WEB ist OFF
+            
+            lcd_putc('+');
+         }
+         else // Web ist OK laeuft
+            
+         {
+            txbuffer[6] &= ~(1<<MODEMPIN);
+            lcd_putc('-');
+         }
+        
+         
          //txbuffer[6] |= (1<<PUMPEPIN);
+         /*
          lcd_gotoxy(12,0);
          lcd_puthex(txbuffer[6]);
          lcd_putc(' ');
          lcd_puthex(txbuffer[7]);
          //txbuffer[7]= eeprom_read_byte(&WDT_ErrCount0);
-         
+         */
          rxdata=0;
          //OSZIHI;
       } // if rxdata
